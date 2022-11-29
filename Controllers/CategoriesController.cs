@@ -10,7 +10,7 @@ namespace Store.Controllers;
 public class CategoriesController : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Category>>> GetCategoriesAsync(StoreDbContext context)
+    public async Task<ActionResult<List<Category>>> GetCategoriesAsync([FromServices] StoreDbContext context)
     {
         var categories = await context.Categories.AsNoTracking().ToListAsync();
 
@@ -20,7 +20,7 @@ public class CategoriesController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Category>> GetCategoryAsync(
         int id,
-        StoreDbContext context)
+        [FromServices] StoreDbContext context)
     {
         var category = await context.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
@@ -31,8 +31,8 @@ public class CategoriesController : ControllerBase
 
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategoryAsync(
-        StoreDbContext context,
-        Category model)
+        [FromServices] StoreDbContext context,
+        [FromBody] Category model)
     {
         try
         {
@@ -50,8 +50,8 @@ public class CategoriesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateCategoryAsync(
         int id,
-        Category model,
-        StoreDbContext context)
+        [FromBody] Category model,
+        [FromServices] StoreDbContext context)
     {
         if (model.Id != id) return BadRequest("Verifique os dados e tente novamente.");
 
@@ -69,7 +69,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteCategoryAsync(int id, StoreDbContext context)
+    public async Task<ActionResult> DeleteCategoryAsync(int id, [FromServices] StoreDbContext context)
     {
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
 

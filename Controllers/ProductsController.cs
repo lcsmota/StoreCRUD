@@ -10,7 +10,7 @@ namespace Store.Controllers;
 public class ProductsController : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Product>>> GetProductsAsync(StoreDbContext context)
+    public async Task<ActionResult<List<Product>>> GetProductsAsync([FromServices] StoreDbContext context)
     {
         var products = await context.Products
                                     .AsNoTracking()
@@ -19,8 +19,8 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<Product>>> GetProductsWithCategoryAsync(StoreDbContext context)
+    [HttpGet("productsWithCateg")]
+    public async Task<ActionResult<List<Product>>> GetProductsWithCategoryAsync([FromServices] StoreDbContext context)
     {
         var products = await context.Products
                                     .Include(x => x.Category)
@@ -31,7 +31,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Product>> GetProductAsync(int id, StoreDbContext context)
+    public async Task<ActionResult<Product>> GetProductAsync(int id, [FromServices] StoreDbContext context)
     {
         var product = await context.Products
                                    .AsNoTracking()
@@ -40,8 +40,8 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<Product>> GetProductWithCategoryAsync(int id, StoreDbContext context)
+    [HttpGet("{id:int}/productsWithCateg")]
+    public async Task<ActionResult<Product>> GetProductWithCategoryAsync(int id, [FromServices] StoreDbContext context)
     {
         var product = await context.Products
                                    .Include(categ => categ.Category)
@@ -52,7 +52,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("categories/{id:int}")]
-    public async Task<ActionResult<List<Product>>> GetProducstByCategory(int id, StoreDbContext context)
+    public async Task<ActionResult<List<Product>>> GetProducstByCategory(int id, [FromServices] StoreDbContext context)
     {
         var products = await context.Products
                                    .Include(x => x.Category)
@@ -64,7 +64,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Product>> CreateProductAsync(StoreDbContext context, Product model)
+    public async Task<ActionResult<Product>> CreateProductAsync(
+        [FromServices] StoreDbContext context,
+        [FromBody] Product model)
     {
         try
         {
@@ -82,8 +84,8 @@ public class ProductsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<ActionResult> UpdateProductAsync(
         int id,
-        StoreDbContext context,
-        Product model)
+        [FromServices] StoreDbContext context,
+        [FromBody] Product model)
     {
         if (model.Id != id) return BadRequest("Verifique os dados e tente novamente.");
 
@@ -101,7 +103,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult> DeleteProductAsync(int id, StoreDbContext context)
+    public async Task<ActionResult> DeleteProductAsync(int id, [FromServices] StoreDbContext context)
     {
         var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
 

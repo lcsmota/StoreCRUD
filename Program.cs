@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Store;
@@ -9,6 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddDbContext<StoreDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.Providers.Add<GzipCompressionProvider>();
+        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/json" });
+    });
 
     builder.Services.AddControllers();
 

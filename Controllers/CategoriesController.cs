@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Store.Context;
@@ -30,6 +31,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "employee")]
     public async Task<ActionResult<Category>> CreateCategoryAsync(
         [FromServices] StoreDbContext context,
         [FromBody] Category model)
@@ -48,6 +50,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "employee")]
     public async Task<ActionResult> UpdateCategoryAsync(
         int id,
         [FromBody] Category model,
@@ -69,6 +72,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "manager")]
     public async Task<ActionResult> DeleteCategoryAsync(int id, [FromServices] StoreDbContext context)
     {
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);

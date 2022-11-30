@@ -8,6 +8,8 @@ using Store.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.Services.AddCors();
+
     builder.Services.AddDbContext<StoreDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
@@ -51,6 +53,11 @@ var app = builder.Build();
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors(opt => opt
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
 
     app.UseAuthentication();
     app.UseAuthorization();

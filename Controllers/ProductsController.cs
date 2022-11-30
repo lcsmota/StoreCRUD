@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Store.Context;
@@ -64,6 +65,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "employee")]
     public async Task<ActionResult<Product>> CreateProductAsync(
         [FromServices] StoreDbContext context,
         [FromBody] Product model)
@@ -82,6 +84,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "employee")]
     public async Task<ActionResult> UpdateProductAsync(
         int id,
         [FromServices] StoreDbContext context,
@@ -103,6 +106,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "manager")]
     public async Task<ActionResult> DeleteProductAsync(int id, [FromServices] StoreDbContext context)
     {
         var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);

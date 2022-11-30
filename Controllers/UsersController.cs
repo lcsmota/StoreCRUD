@@ -11,9 +11,32 @@ namespace Store.Controllers;
 [Route("api/v1/[controller]")]
 public class UsersController : ControllerBase
 {
+
+    [HttpGet]
+    [Authorize(Roles = "manager")]
+    public async Task<ActionResult<List<User>>> GetUsersAsync([FromServices] StoreDbContext context)
+    {
+        var users = await context.Users
+                                 .AsNoTracking()
+                                 .ToListAsync();
+
+        return users;
+    }
+
+    [HttpGet("{id:int}")]
+    [Authorize(Roles = "manager")]
+    public async Task<ActionResult<User>> GetUsersAsync(int id, [FromServices] StoreDbContext context)
+    {
+        var user = await context.Users
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(prop => prop.Id == id);
+
+        return user;
+    }
+
     [HttpPost]
     [AllowAnonymous]
-    public async Task<ActionResult<User>> Post([FromServices] StoreDbContext context, [FromBody] User model)
+    public async Task<ActionResult<User>> CreateUserAsync([FromServices] StoreDbContext context, [FromBody] User model)
     {
         try
         {
@@ -33,7 +56,7 @@ public class UsersController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<dynamic>> Authenticate([FromServices] StoreDbContext context, [FromBody] User model)
+    public async Task<ActionResult<dynamic>> AuthenticateAsync([FromServices] StoreDbContext context, [FromBody] User model)
     {
         var user = await context.Users
                                 .AsNoTracking()
@@ -52,4 +75,24 @@ public class UsersController : ControllerBase
             token = token
         };
     }
+
+    [HttpPut("id:int")]
+    [Authorize(Roles = "manager")]
+    public async Task<ActionResult> UpdateUserAsync(int id, [FromServices] StoreDbContext context, [FromBody] User model)
+    {
+        if (model.Id != id) return BadRequest("Usuário não encontrado.");
+
+        try
+        {
+            context.Entry(model).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        catch (System.Exception)
+        {
+            return BadRequest("Erro ao tentar atualizar usuário.");
+        }
+    }
+
 }

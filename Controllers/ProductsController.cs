@@ -69,8 +69,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "employee")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = "employee, manager")]
     public async Task<ActionResult<Product>> CreateProductAsync(
         [FromServices] StoreDbContext context,
         [FromBody] Product model)
@@ -89,8 +88,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "employee")]
-    [Authorize(Roles = "manager")]
+    [Authorize(Roles = "employee, manager")]
     public async Task<ActionResult> UpdateProductAsync(
         int id,
         [FromServices] StoreDbContext context,

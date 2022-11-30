@@ -32,6 +32,7 @@ public class CategoriesController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "employee")]
+    [Authorize(Roles = "manager")]
     public async Task<ActionResult<Category>> CreateCategoryAsync(
         [FromServices] StoreDbContext context,
         [FromBody] Category model)
@@ -51,6 +52,7 @@ public class CategoriesController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "employee")]
+    [Authorize(Roles = "manager")]
     public async Task<ActionResult> UpdateCategoryAsync(
         int id,
         [FromBody] Category model,

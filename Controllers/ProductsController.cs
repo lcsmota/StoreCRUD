@@ -38,6 +38,8 @@ public class ProductsController : ControllerBase
                                    .AsNoTracking()
                                    .FirstOrDefaultAsync(prop => prop.Id == id);
 
+        if (product is null) return NotFound("Produto não encontrado.");
+
         return Ok(product);
     }
 
@@ -48,6 +50,8 @@ public class ProductsController : ControllerBase
                                    .Include(categ => categ.Category)
                                    .AsNoTracking()
                                    .FirstOrDefaultAsync(prop => prop.Id == id);
+
+        if (product is null) return NotFound("Produto não encontrado.");
 
         return Ok(product);
     }
@@ -66,6 +70,7 @@ public class ProductsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "employee")]
+    [Authorize(Roles = "manager")]
     public async Task<ActionResult<Product>> CreateProductAsync(
         [FromServices] StoreDbContext context,
         [FromBody] Product model)
@@ -85,6 +90,7 @@ public class ProductsController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "employee")]
+    [Authorize(Roles = "manager")]
     public async Task<ActionResult> UpdateProductAsync(
         int id,
         [FromServices] StoreDbContext context,

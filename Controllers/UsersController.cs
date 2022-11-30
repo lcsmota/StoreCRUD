@@ -31,6 +31,8 @@ public class UsersController : ControllerBase
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(prop => prop.Id == id);
 
+        if (user is null) return NotFound("Usuário não encontrado.");
+
         return user;
     }
 

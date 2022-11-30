@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Store.Models;
 
@@ -24,5 +25,7 @@ public class Product
     [Required(ErrorMessage = "Campo obrigatório")]
     [Range(1, int.MaxValue)]
     public int CategoryId { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Category Category { get; set; }
 }

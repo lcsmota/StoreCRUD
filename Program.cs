@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Store;
 using Store.Context;
 
@@ -20,6 +21,49 @@ var builder = WebApplication.CreateBuilder(args);
     });
 
     builder.Services.AddControllers();
+
+    builder.Services.AddEndpointsApiExplorer();
+
+    builder.Services.AddSwaggerGen(sw =>
+        {
+            sw.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Store CRUD",
+                Version = "v1",
+                Description = "Criando um CRUD com Entity Framework Core"
+            });
+
+            sw.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description =
+                    "JWT Authorization Header - utilizado com Bearer Authentication.\r\n\r\n" +
+                    "Digite 'Bearer' [espaço] e então seu token no campo abaixo.\r\n\r\n" +
+                    "Exemplo (informar sem as aspas): 'Bearer 12345abcdef'",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
+            });
+
+            sw.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oatuh2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                    });
+        });
 
     var key = Encoding.ASCII.GetBytes(KeyToken.Secret);
     builder.Services.AddAuthentication(x =>
@@ -39,13 +83,11 @@ var builder = WebApplication.CreateBuilder(args);
             ValidateAudience = false
         };
     });
-
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
 }
 
 var app = builder.Build();
 {
+
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();

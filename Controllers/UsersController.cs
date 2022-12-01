@@ -78,7 +78,7 @@ public class UsersController : ControllerBase
         };
     }
 
-    [HttpPut("id:int")]
+    [HttpPut("{id:int}")]
     [Authorize(Roles = "manager")]
     public async Task<ActionResult> UpdateUserAsync(int id, [FromServices] StoreDbContext context, [FromBody] User model)
     {

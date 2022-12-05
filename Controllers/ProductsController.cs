@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Store.Context;
+using Store.DTOs;
 using Store.Models;
 
 namespace Store.Controllers;
@@ -31,7 +32,7 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:int}", Name = "GetProductById")]
     public async Task<ActionResult<Product>> GetProductAsync(int id, [FromServices] StoreDbContext context)
     {
         var product = await context.Products
@@ -72,14 +73,24 @@ public class ProductsController : ControllerBase
     [Authorize(Roles = "employee, manager")]
     public async Task<ActionResult<Product>> CreateProductAsync(
         [FromServices] StoreDbContext context,
-        [FromBody] Product model)
+        [FromBody] ProductForCreationDTO model)
     {
         try
         {
-            context.Products.Add(model);
+            if (model is null) return BadRequest("Check the field(s) and try again.");
+
+            var createdProduct = new Product
+            {
+                Title = model.Title,
+                Description = model.Description,
+                Price = model.Price,
+                CategoryId = model.CategoryId
+            };
+
+            context.Products.Add(createdProduct);
             await context.SaveChangesAsync();
 
-            return Ok(model);
+            return CreatedAtRoute("GetProductById", new { id = createdProduct.Id }, createdProduct);
         }
         catch (System.Exception)
         {
